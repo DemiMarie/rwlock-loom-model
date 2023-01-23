@@ -58,7 +58,10 @@ mod r#impl {
     pub(super) struct RwLock<T: Sync> {
         state: AtomicI64,
         departing_readers: AtomicI64,
+        #[cfg(not(feature = "notify"))]
         writer_wait: Event,
+        #[cfg(feature = "notify")]
+        writer_wait: loom::sync::Notify,
         reader_wait: Event,
         readers_waiting: AtomicI64,
         writers_lock: Mutex<()>,
@@ -116,7 +119,10 @@ mod r#impl {
             Self {
                 state: AtomicI64::new(0),
                 departing_readers: AtomicI64::new(0),
+                #[cfg(not(feature = "notify"))]
                 writer_wait: Event::new(true),
+                #[cfg(feature = "notify")]
+                writer_wait: loom::sync::Notify::new(),
                 reader_wait: Event::new(false),
                 readers_waiting: AtomicI64::new(0),
                 writers_lock: Mutex::new(()),

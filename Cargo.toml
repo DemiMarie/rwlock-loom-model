@@ -5,3 +5,6 @@ edition = "2021"
 
 [dependencies]
 loom = { version = "0.5.6", features = ["checkpoint"] }
+
+[features]
+notify = []
